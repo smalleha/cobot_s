@@ -1,0 +1,47 @@
+<?xml version='1'?>
+<launch>
+  <!-- <param name="robot_description" command="$(find xacro)/xacro $(find cobot_description)/urdf/cobot_description.urdf.xacro" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" /> -->
+
+  <include file="$(find serial_imu)/launch/imu_msg.launch" />
+
+
+
+  <node name="ydlidar_node"  pkg="ydlidar_ros"  type="ydlidar_node" output="screen" respawn="false" >
+    <param name="port"         type="string" value="/dev/ydlidar"/>  
+    <param name="baudrate"         type="int" value="230400"/>  
+    <param name="frame_id"     type="string" value="laser_frame"/>
+    <param name="resolution_fixed"    type="bool"   value="true"/>
+    <param name="auto_reconnect"    type="bool"   value="true"/>
+    <param name="reversion"    type="bool"   value="true"/>
+    <param name="angle_min"    type="double" value="-150" />
+    <param name="angle_max"    type="double" value="150" />
+    <param name="range_min"    type="double" value="0.1" />
+    <param name="range_max"    type="double" value="16.0" />
+    <param name="ignore_array" type="string" value="" />
+    <param name="frequency"    type="double" value="10"/>
+    <param name="samp_rate"    type="int"    value="9"/>
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="laser_frame_to_front_lidar" 
+    args="0.0 0.0 0.0 0.0 0.0 0.0 front_lidar laser_frame 10"/>
+
+
+  <node pkg="rf2o_laser_odometry" type="rf2o_laser_odometry_node" name="rf2o_laser_odometry" output="screen">
+    <param name="laser_scan_topic" value="/scan"/>              
+    <param name="odom_topic" value="/scan/odom" />              
+    
+    <param name="base_frame_id" value="base_link"/>       
+    <param name="odom_frame_id" value="/scan/odom" />                
+    <param name="publish_tf" value="false" />                   
+    <param name="init_pose_from_topic" value="" />             
+    <param name="freq" value="10.0"/>                          
+    <param name="verbose" value="false" />                     
+  </node>
+
+  <include file='$(find cobot_nav)/launch/ekf_odom.launch' />
+
+
+  <node pkg="rviz" type="rviz" name="openlidar_rviz" args="-d $(find cobot_nav)/rviz/open_lidar.rviz" />
+</launch>

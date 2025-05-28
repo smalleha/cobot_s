@@ -1,0 +1,50 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/zsq/cobot_kit/cobot_s/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/plugin/agilex_nav_control_rviz_plugin/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/camera/ar_track_alvar/ar_track_alvar/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/aruco/aruco_ros/aruco/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/aruco/aruco_ros/aruco_ros/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/car_base/cobot_ros/cobot_base/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/SLAM/depthimage_to_laserscan/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/gripper/dh_gripper_driver/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/imu_ch110/imu_tool/imu_complementary_filter/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/imu_ch110/imu_tool/imu_filter_madgwick/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/SLAM/laser_scan_matcher/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/SLAM/openslam_gmapping/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/pan_tilt_ros/pan_tilt_driver/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/SLAM/pointcloud_to_laserscan/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/camera/realsense-ros/realsense2_camera/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/SLAM/localizer/rf2o_laser_odometry/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/moveit_config/rm_75_robot/rm_75_control/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/moveit_config/rm_75_robot/rm_75_demo/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/moveit_config/rm_75_robot/rm_75_driver/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/moveit_config/rm_75_robot/rm_75_msgs/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/car_base/ugv_sdk/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/lidar/velodyne/velodyne_driver/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/lidar/velodyne/velodyne_laserscan/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/lidar/velodyne/velodyne_pcl/include/**",
+        "/home/zsq/cobot_kit/cobot_s/src/sensors/lidar/velodyne/velodyne_pointcloud/include/**",
+        "/home/q/ros1/cobot_kit/cobot_s/agilex_ws/src/agx_rm_pick/include/**",
+        "/home/q/ros1/cobot_kit/cobot_s/agilex_ws/devel/include/**",
+        "/home/q/ros1/cobot_kit/cobot_s/cobot_s_xbt/agilex_ws/src/core/agx_aubo_pick/include/**",
+        "/home/q/ros1/cobot_kit/cobot_s/agilex_ws/src/pan_tilt_ros/pan_tilt_driver/include/**",
+        "/opt/ros/noetic/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

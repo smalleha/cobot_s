@@ -1,0 +1,5 @@
+<?xml version='1'?>
+<launch>
+	<node pkg="agx_cr5_pick" type="agx_cr5_pick" name="agx_cr5_pick" output="screen" />
+</launch>
+ 
