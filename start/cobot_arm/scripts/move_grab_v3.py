@@ -32,6 +32,10 @@ class MoveItPlanningDemo:
 
         # 初始化ROS节点
         rospy.init_node("cobot_move_grab")
+        self.temp = {PICK: Pose(), OBJECT: Pose(), PLACE: Pose()}
+        self.seq_count = {PICK: 0, OBJECT: 0, PLACE: 0}
+        self.real_position = {PICK: Pose(), OBJECT: Pose(), PLACE: Pose()}
+
         self.tf_listener = tf.TransformListener()
         self.gripper_pub = rospy.Publisher("/gripper/ctrl", GripperCtrl, queue_size=1, latch=True)
         self.nav_goal_pub = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=1, latch=True) 
@@ -70,9 +74,6 @@ class MoveItPlanningDemo:
         # self.arm.allow_replanning(True)
         # 设置每次运动规划的时间限制：5s
         # self.arm.set_planning_time(5)
-        self.temp = {PICK: Pose(), OBJECT: Pose(), PLACE: Pose()}
-        self.seq_count = {PICK: 0, OBJECT: 0, PLACE: 0}
-        self.real_position = {PICK: Pose(), OBJECT: Pose(), PLACE: Pose()}
 
         self.id_num = int()
         self.broadcaster = tf2_ros.StaticTransformBroadcaster()
@@ -173,23 +174,22 @@ class MoveItPlanningDemo:
 
     def get_pickup_point(self, msg):
         for marker in msg.markers:
-            id_num = marker.id
-            if id_num in (PICK, OBJECT, PLACE):
+            self.id_num = marker.id
+            if self.id_num in (PICK, OBJECT, PLACE):
 
-                self.temp[id_num].position.x += marker.pose.pose.position.x
-                self.temp[id_num].position.y += marker.pose.pose.position.y
-                self.temp[id_num].position.z += marker.pose.pose.position.z
+                self.temp[self.id_num].position.x += marker.pose.pose.position.x
+                self.temp[self.id_num].position.y += marker.pose.pose.position.y
+                self.temp[self.id_num].position.z += marker.pose.pose.position.z
 
-                count = self.seq_count[id_num]
-                self.seq_count[id_num] += 1
+                count = self.seq_count[self.id_num]
+                self.seq_count[self.id_num] += 1
 
                 if count == 2:
-                    self.real_position[id_num].position.x = self.temp[id_num].position.x / 3.0
-                    self.real_position[id_num].position.y = self.temp[id_num].position.y / 3.0
-                    self.real_position[id_num].position.z = self.temp[id_num].position.z / 3.0
-                    self.temp[id_num] = Pose()
-                    self.seq_count[id_num] = 0
-
+                    self.real_position[self.id_num].position.x = self.temp[self.id_num].position.x / 3.0
+                    self.real_position[self.id_num].position.y = self.temp[self.id_num].position.y / 3.0
+                    self.real_position[self.id_num].position.z = self.temp[self.id_num].position.z / 3.0
+                    self.temp[self.id_num] = Pose()
+                    self.seq_count[self.id_num] = 0
 
     def NavIsReachGoal(self, msg):
         self.nav_status = msg.status.status
@@ -317,24 +317,30 @@ class MoveItPlanningDemo:
         self.scene.remove_world_object("box2")
         self.target_pose = Pose()
 
-    def move_pose(self, target_pose):
-        # 设置机器臂当前的状态作为运动初始状态
-        self.arm.set_start_state_to_current_state()
+    def move_joint5(self,angle_deg):
+        joint_values = self.arm.get_current_joint_values()
 
-        # 设置机械臂终端运动的目标位姿
-        self.arm.set_pose_target(target_pose, self.end_effector_link)
+        # 第5轴在列表中的索引（从 0 开始计数）
+        idx = 5
+        angle_rad = math.radians(angle_deg)
 
-        # 规划运动路径
-        rospy.loginfo("planning...")
-        plan_success, traj, planning_time, error_code = self.arm.plan()
+        # 逆时针旋转：增加角度
+        joint_values[idx] -= angle_rad
+        self.arm.set_joint_value_target(joint_values)
 
-        # rospy.loginfo(traj)
-        if not plan_success:
-            return False
+        # 拆包 plan() 返回值
+        success, plan, planning_time, error_code = self.arm.plan()
+        if not success:
+            rospy.logerr("规划失败，无法执行运动")
+        else:
+            # 只传 trajectory（plan）给 execute
+            exec_success = self.arm.execute(plan, wait=True)
+            if exec_success:
+                rospy.loginfo("第5关节已旋转 %.2f°", angle_deg)
+            else:
+                rospy.logerr("执行失败")
 
-        # 按照规划的运动路径控制机械臂运动
-        self.arm.execute(traj, wait=True)
-        rospy.sleep(1)
+
     def move_straight_pose(self, scale=1):
         rospy.sleep(2)
 
@@ -346,7 +352,7 @@ class MoveItPlanningDemo:
         wpose = start_pose
         waypoints.append(copy.deepcopy(wpose))
 
-        wpose.position.z += scale * 0.1
+        wpose.position.z += scale * 0.0
         waypoints.append(copy.deepcopy(wpose))
         wpose.position.x -= scale * 0.1
         waypoints.append(copy.deepcopy(wpose))
@@ -422,19 +428,19 @@ class MoveItPlanningDemo:
     def run(self):
         start_goal = True
         for nav_goal in self.nav_goal_lists:
-            # self.nav_goal_pub.publish(nav_goal)
-            # #3代表到达目标点；4代表未到达目标点
-            # while self.nav_status != 3 and self.nav_status != 4:
-            #     rospy.sleep(1.0)
-            # if self.nav_status == 4:
-            #     self.nav_status = -1
-            #     continue
-            # self.nav_status = -1
+            self.nav_goal_pub.publish(nav_goal)
+            #3代表到达目标点；4代表未到达目标点
+            while self.nav_status != 3 and self.nav_status != 4:
+                rospy.sleep(1.0)
+            if self.nav_status == 4:
+                self.nav_status = -1
+                continue
+            self.nav_status = -1
 
-            # if start_goal:
-            #     rospy.loginfo("reach start position")
-            #     start_goal = False
-            #     continue
+            if start_goal:
+                rospy.loginfo("reach start position")
+                start_goal = False
+                continue
 
             self.move2initial()
             print("11111")
@@ -453,6 +459,7 @@ class MoveItPlanningDemo:
                     self.move_waypoints(self.target_pose)
                     self.gripper_close()
                     rospy.sleep(1)
+                    self.move_joint5(20)
 
                     self.move_straight_pose()
                     self.move2initial()

@@ -313,25 +313,24 @@ class MoveItPlanningDemo:
 
         # Note: We are just planning, not asking move_group to actually move the robot yet:
         return fraction
-
+    
     def get_tf(self, parent_frame, child_frame):
         try:
             self.target_pose = Pose()
 
             current_pose = self.arm.get_current_pose().pose
-            if child_frame == "grab_pose" and self.id_num == PICK:
-                self.target_pose.position.x = current_pose.position.x + self.real_position[self.id_num].position.z - self.gripper_z
-                self.target_pose.position.y = current_pose.position.y + (self.real_position[self.id_num].position.y) + self.gripper_y
-                self.target_pose.position.z = current_pose.position.z + (-self.real_position[self.id_num].position.x) +self.gripper_x
+            if child_frame == "grab_pose" and self.id_num == 0:
+                self.target_pose.position.x = current_pose.position.x + self.real_position[0].position.z - self.gripper_z
+                self.target_pose.position.y = current_pose.position.y + (-self.real_position[0].position.y) + self.gripper_y
+                self.target_pose.position.z = current_pose.position.z + (-self.real_position[0].position.x) +self.gripper_x
 
-            elif child_frame == "place_pose" and self.id_num == PLACE:
-                self.target_pose.position.x = current_pose.position.x + self.real_position[self.id_num].position.z - self.gripper_z + 0.03
-                self.target_pose.position.y = current_pose.position.y + (self.real_position[self.id_num].position.y) + self.gripper_y
-                self.target_pose.position.z = current_pose.position.z + (-self.real_position[self.id_num].position.x) +self.gripper_x + 0.05
-            else:
-                rospy.logerr("The obtained TF coordinates do not match the QR code")
-
+            elif child_frame == "place_pose" and self.id_num == 2:
+                self.target_pose.position.x = current_pose.position.x + self.real_position[2].position.z - self.gripper_z
+                self.target_pose.position.y = current_pose.position.y + (-self.real_position[2].position.y) + self.gripper_y
+                self.target_pose.position.z = current_pose.position.z + (-self.real_position[2].position.x) +self.gripper_x
+            else :
                 return False
+
             rospy.loginfo(f"Current pose: x={current_pose.position.x:.3f}, y={current_pose.position.y:.3f}, z={current_pose.position.z:.3f}")
             rospy.loginfo(f"real_position: x={self.real_position[self.id_num].position.x:.3f},y={self.real_position[self.id_num].position.y:.3f}, z={self.real_position[self.id_num].position.z:.3f}")
 
@@ -341,8 +340,7 @@ class MoveItPlanningDemo:
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException, tf2_ros.TransformException) as e:
             rospy.logwarn(e)
             return False
-
-
+        
     def run(self):
         # self.moving()
         
