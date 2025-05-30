@@ -84,7 +84,7 @@ class MoveItPlanningDemo:
         self.flag = False
         self.gripper_flag = True
 
-        self.gripper_z = 0.16
+        self.gripper_z = 0.14
         self.gripper_x = 0.1
         self.gripper_y = 0.0
         # 控制机械臂先回到home位置
@@ -294,9 +294,7 @@ class MoveItPlanningDemo:
             (plan, fraction) = self.arm.compute_cartesian_path (
                                     waypoints,   # waypoint poses，路点列表
                                     0.01,        # eef_step，终端步进值
-                                    0.0,
-                                    avoid_collisions=True) # avoid_collisions，避障规划            
-            # 尝试次数累加
+                                    True)            # 尝试次数累加
             attempts += 1
             
             # 打印运动规划进程
@@ -358,7 +356,7 @@ class MoveItPlanningDemo:
         waypoints.append(copy.deepcopy(wpose))
 
         (plan, fraction) = self.arm.compute_cartesian_path(
-            waypoints, 0.01, 0.0, avoid_collisions=True # waypoints to follow  # eef_step
+            waypoints, 0.01,True # waypoints to follow  # eef_step
         )  # jump_threshold
 
         if(fraction < 0.9):
